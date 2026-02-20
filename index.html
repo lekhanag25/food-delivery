@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MasalaRush — Indian Food Delivery</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --saffron: #E8470A;
+    --turmeric: #F4A900;
+    --chili: #B5290B;
+    --cream: #FDF6EE;
+    --dark: #1A0800;
+    --green: #2E7D32;
+    --muted: #8B5E3C;
+    --card: #FFFFFF;
+    --rose: #FFF0E8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Poppins',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden}
+  img{image-rendering:auto}
+
+  /* LOADER */
+  .loader{position:fixed;inset:0;background:#1A0800;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .7s,visibility .7s}
+  .loader.hide{opacity:0;visibility:hidden}
+  .loader-flame{font-size:5rem;animation:flicker .5s ease-in-out infinite alternate}
+  @keyframes flicker{from{transform:scale(1) rotate(-4deg);filter:brightness(1)}to{transform:scale(1.12) rotate(4deg);filter:brightness(1.4) drop-shadow(0 0 20px #FF6600)}}
+  .loader-name{font-family:'Playfair Display',serif;color:var(--saffron);font-size:2rem;margin-top:1rem;letter-spacing:4px;animation:lpulse 1.4s ease-in-out infinite}
+  @keyframes lpulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+  /* PARTICLES */
+  .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .particle{position:absolute;font-size:1.4rem;opacity:0;animation:floatUp linear infinite}
+  @keyframes floatUp{0%{transform:translateY(110vh) rotate(0deg);opacity:0}8%{opacity:.1}92%{opacity:.1}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:1rem 5%;background:rgba(253,246,238,.93);backdrop-filter:blur(20px);border-bottom:3px solid transparent;border-image:linear-gradient(90deg,var(--saffron),var(--turmeric),var(--chili)) 1;animation:slideDown .7s ease 1.8s both}
+  @keyframes slideDown{from{transform:translateY(-80px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .logo{display:flex;align-items:center;gap:.5rem;font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:900;color:var(--saffron)}
+  .logo-icon{font-size:1.9rem;animation:spinSlow 8s linear infinite}
+  @keyframes spinSlow{to{transform:rotate(360deg)}}
+  .logo span{color:var(--dark)}
+  nav ul{display:flex;list-style:none;gap:2rem}
+  nav a{text-decoration:none;color:var(--muted);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;transition:color .3s;position:relative}
+  nav a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--saffron);transition:width .3s}
+  nav a:hover{color:var(--saffron)}
+  nav a:hover::after{width:100%}
+  .nav-cta{background:linear-gradient(135deg,var(--saffron),var(--chili));color:white!important;padding:.6rem 1.5rem;border-radius:50px;box-shadow:0 4px 15px rgba(232,71,10,.4);transition:all .3s}
+  .nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(232,71,10,.5)}
+  .nav-cta::after{display:none!important}
+
+  /* HERO */
+  .hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:2rem;padding:8rem 5% 5rem;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;right:-120px;top:50%;transform:translateY(-50%);width:650px;height:650px;border-radius:50%;background:conic-gradient(from 0deg,#E8470A14,#F4A90014,#B5290B14,#E8470A14);animation:mandala 20s linear infinite}
+  @keyframes mandala{to{transform:translateY(-50%) rotate(360deg)}}
+  .hero-left{z-index:1;animation:fromLeft .9s ease 2s both}
+  @keyframes fromLeft{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:translateX(0)}}
+  .hindi{font-size:1rem;color:var(--saffron);font-weight:600;letter-spacing:2px;margin-bottom:.5rem;display:block}
+  .hero-pill{display:inline-flex;align-items:center;gap:.5rem;background:#E8470A18;border:2px solid var(--saffron);color:var(--saffron);padding:.4rem 1.2rem;border-radius:50px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:1.2rem;animation:pillBounce 2.5s ease-in-out infinite}
+  @keyframes pillBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,5rem);line-height:1.08;color:var(--dark);font-weight:900;margin-bottom:1.4rem}
+  .hero h1 em{font-style:normal;color:var(--saffron);display:block;position:relative}
+  .hero h1 em::after{content:'';position:absolute;bottom:-4px;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--saffron),var(--turmeric));border-radius:2px;animation:lineGrow 1s ease 2.8s both;transform-origin:left}
+  @keyframes lineGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .hero p{font-size:.95rem;color:var(--muted);line-height:1.8;font-weight:500;max-width:470px;margin-bottom:2rem}
+  .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.5rem}
+  .btn-primary{background:linear-gradient(135deg,var(--saffron),var(--chili));color:white;border:none;padding:.95rem 2.2rem;border-radius:12px;font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 8px 25px rgba(232,71,10,.4);transition:all .3s}
+  .btn-primary:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 15px 35px rgba(232,71,10,.5)}
+  .btn-ghost{background:transparent;color:var(--dark);border:2.5px solid var(--dark);padding:.95rem 2.2rem;border-radius:12px;font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:all .3s}
+  .btn-ghost:hover{background:var(--dark);color:white;transform:translateY(-4px)}
+  .hero-stats{display:flex;gap:2.5rem;padding-top:1.5rem;border-top:2px dashed #F4A90050}
+  .stat-n{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--saffron);font-weight:900;line-height:1}
+  .stat-l{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+
+  /* HERO RIGHT */
+  .hero-right{z-index:1;display:flex;flex-direction:column;align-items:center;animation:fromRight .9s ease 2.2s both}
+  @keyframes fromRight{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+  .hero-img-wrap{position:relative;width:370px;height:370px}
+  .ring{position:absolute;inset:0;border-radius:50%;border:3px dashed var(--turmeric);opacity:.4;animation:ringRot 12s linear infinite}
+  .ring2{inset:22px;border:2px dashed var(--saffron);opacity:.25;animation:ringRot 8s linear infinite reverse}
+  @keyframes ringRot{to{transform:rotate(360deg)}}
+  .hero-main-img{position:absolute;inset:32px;border-radius:50%;overflow:hidden;box-shadow:0 20px 60px rgba(232,71,10,.35),0 0 0 14px rgba(232,71,10,.07);animation:dishBob 4s ease-in-out infinite}
+  .hero-main-img img{width:100%;height:100%;object-fit:cover}
+  @keyframes dishBob{0%,100%{transform:translateY(0) rotate(-2deg) scale(1)}50%{transform:translateY(-18px) rotate(2deg) scale(1.03)}}
+  .orb-track{position:absolute;inset:0;animation:orbRot 14s linear infinite}
+  @keyframes orbRot{to{transform:rotate(360deg)}}
+  .orb-item{position:absolute;width:54px;height:54px;border-radius:50%;overflow:hidden;border:3px solid white;box-shadow:0 4px 15px rgba(0,0,0,.18);top:-24px;left:calc(50% - 27px);transform-origin:50% 211px;animation:orbCounter 14s linear infinite}
+  .orb-item img{width:100%;height:100%;object-fit:cover}
+  @keyframes orbCounter{to{transform:rotate(-360deg)}}
+  .orb-item:nth-child(2){animation-delay:-4.67s}
+  .orb-item:nth-child(3){animation-delay:-9.33s}
+  .badge-f{position:absolute;background:white;border-radius:14px;padding:.75rem 1.1rem;box-shadow:0 8px 25px rgba(0,0,0,.12);font-weight:700;white-space:nowrap;border-left:4px solid var(--saffron);animation:badgeF ease-in-out infinite}
+  @keyframes badgeF{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .badge-f1{top:4%;right:-14%;animation-duration:3s}
+  .badge-f2{bottom:8%;left:-18%;animation-duration:3.8s;animation-delay:.7s}
+  .badge-f .bv{font-size:1rem;color:var(--dark);font-weight:800}
+  .badge-f .bs{font-size:.68rem;color:var(--muted);font-weight:600}
+
+  /* MARQUEE */
+  .marquee-bar{background:linear-gradient(135deg,var(--saffron),var(--chili));padding:.9rem 0;overflow:hidden;position:relative;z-index:1}
+  .marquee-inner{display:flex;gap:3rem;animation:marqueeScroll 22s linear infinite;white-space:nowrap}
+  @keyframes marqueeScroll{to{transform:translateX(-50%)}}
+  .mq-item{color:white;font-weight:700;font-size:.88rem;text-transform:uppercase;letter-spacing:2px;display:flex;align-items:center;gap:.5rem}
+
+  /* SECTIONS */
+  .section{padding:6rem 5%;position:relative;z-index:1}
+  .sec-sub{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:3px;color:var(--saffron);margin-bottom:.5rem;display:flex;align-items:center;gap:.7rem}
+  .sec-sub::before,.sec-sub::after{content:'';display:block;height:2px;width:35px;background:linear-gradient(90deg,var(--saffron),transparent)}
+  .sec-sub::after{background:linear-gradient(270deg,var(--saffron),transparent)}
+  .sec-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3.2rem);color:var(--dark);margin-bottom:2.5rem;line-height:1.15;font-weight:900}
+  .sec-title .or{color:var(--saffron)}
+
+  /* CATEGORIES */
+  .cat-row{display:flex;gap:1rem;overflow-x:auto;padding-bottom:1rem;scrollbar-width:none}
+  .cat-row::-webkit-scrollbar{display:none}
+  .cat-btn{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.1rem 1.6rem;background:white;border-radius:18px;border:2.5px solid transparent;cursor:pointer;min-width:105px;box-shadow:0 4px 14px rgba(0,0,0,.06);transition:all .3s}
+  .cat-btn:hover,.cat-btn.active{border-color:var(--saffron);transform:translateY(-6px);box-shadow:0 12px 28px rgba(232,71,10,.18)}
+  .cat-btn.active{background:linear-gradient(135deg,var(--saffron),var(--chili))}
+  .cat-btn.active .cat-lbl{color:white}
+  .cat-img{width:52px;height:52px;border-radius:50%;object-fit:cover}
+  .cat-lbl{font-size:.78rem;font-weight:700;color:var(--dark)}
+
+  /* SEARCH */
+  .search-row{display:flex;gap:.8rem;max-width:480px;margin-bottom:2rem}
+  .s-in{flex:1;padding:.85rem 1.3rem;border:2.5px solid #E8D0B0;border-radius:12px;font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:600;outline:none;background:white;color:var(--dark);transition:border-color .3s}
+  .s-in:focus{border-color:var(--saffron)}
+  .s-btn{background:linear-gradient(135deg,var(--saffron),var(--chili));border:none;padding:.85rem 1.4rem;border-radius:12px;color:white;font-size:.9rem;cursor:pointer;transition:all .3s}
+  .s-btn:hover{transform:scale(1.05)}
+
+  /* FOOD GRID */
+  .food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:1.8rem;margin-top:2.5rem}
+  .food-card{background:white;border-radius:22px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.07);transition:all .45s cubic-bezier(.34,1.56,.64,1);opacity:0;transform:translateY(45px) scale(.95)}
+  .food-card.vis{opacity:1;transform:translateY(0) scale(1)}
+  .food-card:hover{transform:translateY(-10px) scale(1.02);box-shadow:0 25px 55px rgba(232,71,10,.14)}
+  .food-img-wrap{position:relative;overflow:hidden;height:200px}
+  .food-img{width:100%;height:200px;object-fit:cover;display:block;transition:transform .5s ease}
+  .food-card:hover .food-img{transform:scale(1.07)}
+  .veg-dot{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:5px;border:2.5px solid;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;background:white}
+  .veg-dot.veg{border-color:var(--green);color:var(--green)}
+  .veg-dot.nonveg{border-color:#C0392B;color:#C0392B}
+  .spice-row{position:absolute;top:12px;left:12px;display:flex;gap:3px}
+  .sp{width:8px;height:8px;border-radius:50%;background:#C0392B}
+  .food-discount{position:absolute;bottom:12px;left:12px;background:linear-gradient(135deg,var(--saffron),var(--chili));color:white;padding:.25rem .7rem;border-radius:50px;font-size:.7rem;font-weight:800}
+  .fav-btn{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.9);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .25s;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .fav-btn:hover{transform:scale(1.2)}
+  .fav-btn.liked{background:#ffe4e4}
+  .food-body{padding:1.2rem}
+  .food-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:.3rem}
+  .food-desc{font-size:.76rem;color:var(--muted);line-height:1.5;margin-bottom:.9rem;font-weight:500}
+  .food-foot{display:flex;justify-content:space-between;align-items:center}
+  .food-price{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:900;color:var(--saffron)}
+  .food-price small{font-family:'Poppins',sans-serif;font-size:.75rem;color:var(--muted);font-weight:600}
+  .food-rating{font-size:.74rem;font-weight:700;color:var(--muted)}
+  .add-btn{background:linear-gradient(135deg,var(--saffron),var(--chili));color:white;border:none;padding:.5rem 1.1rem;border-radius:50px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .3s;box-shadow:0 4px 12px rgba(232,71,10,.35)}
+  .add-btn:hover{transform:scale(1.1) translateY(-2px);box-shadow:0 8px 20px rgba(232,71,10,.45)}
+  .add-btn:active{transform:scale(.95)}
+  .empty{grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);font-size:1rem;font-weight:600}
+
+  /* SPECIALS */
+  .specials-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:1.5rem}
+  .sp-main{border-radius:26px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;min-height:380px;cursor:pointer;transition:transform .4s;box-shadow:0 15px 40px rgba(232,71,10,.3)}
+  .sp-main:hover{transform:scale(1.02)}
+  .sp-main-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .4s}
+  .sp-main:hover .sp-main-img{opacity:.85}
+  .sp-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.2) 55%,transparent 100%)}
+  .sp-main-content{position:relative;z-index:1;padding:2rem}
+  .sp-tag{background:var(--turmeric);color:#7A5C00;display:inline-block;padding:.3rem .9rem;border-radius:50px;font-size:.72rem;font-weight:800;margin-bottom:.7rem}
+  .sp-main h3{font-family:'Playfair Display',serif;font-size:1.8rem;color:white;font-weight:900;margin-bottom:.4rem}
+  .sp-main p{color:rgba(255,255,255,.75);font-size:.82rem;margin-bottom:1.2rem}
+  .sp-main-btn{background:white;color:var(--saffron);border:none;padding:.75rem 1.6rem;border-radius:50px;font-family:'Poppins',sans-serif;font-weight:800;cursor:pointer;width:fit-content;transition:all .3s;font-size:.82rem}
+  .sp-main-btn:hover{transform:scale(1.05);box-shadow:0 8px 25px rgba(0,0,0,.2)}
+  .sp-col{display:flex;flex-direction:column;gap:1.5rem}
+  .sp-card{background:white;border-radius:20px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,.07);cursor:pointer;transition:all .35s;flex:1;border:2px solid transparent;display:flex}
+  .sp-card:hover{border-color:var(--saffron);transform:translateX(5px);box-shadow:0 10px 28px rgba(232,71,10,.14)}
+  .sp-card-img{width:90px;height:100%;object-fit:cover;flex-shrink:0}
+  .sp-card-body{padding:1rem;display:flex;flex-direction:column;justify-content:center}
+  .sp-card-body h4{font-family:'Playfair Display',serif;font-weight:700;font-size:.92rem;margin-bottom:.3rem}
+  .sp-card-body p{font-size:.72rem;color:var(--muted);font-weight:500}
+  .sp-price{color:var(--saffron);font-weight:800;font-size:.95rem;margin-top:.4rem}
+
+  /* HOW IT WORKS */
+  .how-section{background:var(--dark);padding:6rem 5%;position:relative;overflow:hidden}
+  .how-section .sec-sub{color:var(--turmeric)}
+  .how-section .sec-title{color:white}
+  .how-glow{position:absolute;right:-150px;top:50%;transform:translateY(-50%);width:500px;height:500px;border-radius:50%;background:conic-gradient(from 0deg,rgba(232,71,10,.12),rgba(244,169,0,.1),rgba(232,71,10,.06),transparent);animation:mandala 15s linear infinite}
+  .steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem}
+  .step-card{text-align:center;padding:2.5rem 1.5rem;border:1px solid rgba(232,71,10,.15);border-radius:22px;background:rgba(255,255,255,.03);transition:all .4s;opacity:0;transform:translateY(30px);position:relative;overflow:hidden}
+  .step-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--saffron),var(--turmeric));transform:scaleX(0);transition:transform .4s;transform-origin:left}
+  .step-card:hover::after{transform:scaleX(1)}
+  .step-card.vis{opacity:1;transform:translateY(0)}
+  .step-card:hover{background:rgba(232,71,10,.07);transform:translateY(-8px)}
+  .step-num{font-size:4rem;font-family:'Playfair Display',serif;font-weight:900;color:rgba(232,71,10,.12);line-height:1;margin-bottom:-2rem}
+  .step-icon-img{width:70px;height:70px;border-radius:50%;object-fit:cover;margin:0 auto 1rem;display:block;box-shadow:0 6px 20px rgba(0,0,0,.2);animation:stepFloat ease-in-out infinite 3s}
+  .step-card:nth-child(2) .step-icon-img{animation-delay:-1s}
+  .step-card:nth-child(3) .step-icon-img{animation-delay:-2s}
+  .step-card:nth-child(4) .step-icon-img{animation-delay:-.5s}
+  @keyframes stepFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.08)}}
+  .step-card h3{color:white;font-size:.95rem;font-weight:700;margin-bottom:.6rem}
+  .step-card p{color:rgba(255,255,255,.42);font-size:.78rem;line-height:1.6;font-weight:500}
+
+  /* PROMO */
+  .promo-wrap{margin:0 5%;border-radius:26px;overflow:hidden}
+  .promo-inner{background:linear-gradient(135deg,#1A0800,#3D1500);padding:4rem;display:flex;justify-content:space-between;align-items:center;gap:2rem;position:relative;overflow:hidden}
+  .promo-inner::before{content:'';position:absolute;left:-100px;top:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(232,71,10,.2),transparent 70%)}
+  .promo-left{z-index:1}
+  .promo-tag{background:var(--saffron);color:white;display:inline-block;padding:.3rem 1rem;border-radius:50px;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem;animation:tagPulse 2s ease-in-out infinite}
+  @keyframes tagPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,71,10,.5)}50%{box-shadow:0 0 0 8px rgba(232,71,10,0)}}
+  .promo-inner h2{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.5vw,2.8rem);color:white;font-weight:900;margin-bottom:.6rem}
+  .promo-inner p{color:rgba(255,255,255,.55);font-weight:500;margin-bottom:1.5rem;font-size:.88rem}
+  .promo-code{display:inline-flex;align-items:center;gap:1rem;background:rgba(255,255,255,.07);border:1.5px dashed rgba(232,71,10,.5);border-radius:12px;padding:.75rem 1.4rem;margin-bottom:1.5rem}
+  .promo-code span{color:var(--turmeric);font-weight:900;font-size:1.15rem;letter-spacing:3px}
+  .copy-btn{background:var(--saffron);color:white;border:none;padding:.38rem .85rem;border-radius:8px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .2s}
+  .copy-btn:hover{transform:scale(1.07)}
+  .promo-btn{background:linear-gradient(135deg,var(--saffron),var(--chili));color:white;border:none;padding:.95rem 2.5rem;border-radius:12px;font-family:'Poppins',sans-serif;font-weight:800;font-size:.95rem;cursor:pointer;box-shadow:0 8px 25px rgba(232,71,10,.4);transition:all .3s}
+  .promo-btn:hover{transform:translateY(-3px) scale(1.05)}
+  .promo-img{z-index:1;width:220px;height:220px;border-radius:50%;object-fit:cover;box-shadow:0 20px 50px rgba(232,71,10,.4);animation:dishBob 4s ease-in-out infinite;flex-shrink:0}
+
+  /* REVIEWS */
+  .reviews-track{display:flex;gap:1.5rem;overflow-x:auto;padding-bottom:1rem;scrollbar-width:none}
+  .reviews-track::-webkit-scrollbar{display:none}
+  .rv-card{flex:0 0 295px;background:white;border-radius:20px;padding:1.6rem;box-shadow:0 4px 20px rgba(0,0,0,.06);border-top:4px solid var(--saffron);transition:transform .3s}
+  .rv-card:hover{transform:translateY(-5px)}
+  .rv-stars{color:var(--turmeric);font-size:.95rem;letter-spacing:2px;margin-bottom:.7rem}
+  .rv-text{font-size:.82rem;color:var(--muted);line-height:1.7;font-weight:500;margin-bottom:1.1rem;font-style:italic}
+  .rv-user{display:flex;align-items:center;gap:.8rem}
+  .rv-avatar{width:42px;height:42px;border-radius:50%;object-fit:cover}
+  .rv-name{font-weight:800;font-size:.85rem}
+  .rv-loc{font-size:.7rem;color:var(--muted);font-weight:600}
+
+  /* CART & TOAST */
+  .cart-fab{position:fixed;bottom:2rem;right:2rem;z-index:500;background:linear-gradient(135deg,var(--saffron),var(--chili));color:white;border:none;width:62px;height:62px;border-radius:50%;font-size:1.4rem;cursor:pointer;box-shadow:0 8px 25px rgba(232,71,10,.5);display:flex;align-items:center;justify-content:center;transition:all .3s}
+  .cart-fab:hover{transform:scale(1.12) rotate(5deg)}
+  .cart-n{position:absolute;top:-4px;right:-4px;background:var(--dark);color:white;width:22px;height:22px;border-radius:50%;font-size:.65rem;font-weight:900;display:flex;align-items:center;justify-content:center}
+  .toast{position:fixed;bottom:7rem;right:2rem;background:var(--dark);color:white;padding:1rem 1.5rem;border-radius:14px;font-weight:700;font-size:.85rem;z-index:999;box-shadow:0 10px 30px rgba(0,0,0,.25);border-left:4px solid var(--saffron);transform:translateY(20px) scale(.95);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+  .toast.show{opacity:1;transform:translateY(0) scale(1)}
+
+  /* FOOTER */
+  footer{background:var(--dark);padding:4rem 5% 2rem;position:relative;overflow:hidden;z-index:1}
+  footer::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--saffron),var(--turmeric),var(--chili),var(--saffron))}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+  .footer-logo{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;color:var(--saffron);display:flex;align-items:center;gap:.4rem;margin-bottom:1rem}
+  .footer-desc{color:rgba(255,255,255,.38);font-size:.82rem;line-height:1.7;font-weight:500}
+  .f-col h4{color:white;font-weight:800;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:1.1rem}
+  .f-col a{display:block;color:rgba(255,255,255,.38);font-size:.8rem;font-weight:500;margin-bottom:.55rem;text-decoration:none;transition:color .3s}
+  .f-col a:hover{color:var(--saffron)}
+  .footer-btm{border-top:1px solid rgba(255,255,255,.08);padding-top:2rem;text-align:center;color:rgba(255,255,255,.28);font-size:.78rem;font-weight:500}
+
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr}
+    .hero-right,.promo-img{display:none}
+    .specials-grid{grid-template-columns:1fr}
+    .footer-grid{grid-template-columns:1fr}
+    nav ul{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="loader-flame">🪔</div>
+  <div class="loader-name">MasalaRush</div>
+</div>
+
+<div class="particles" id="particles"></div>
+
+<nav>
+  <div class="logo"><span class="logo-icon">🌶️</span>Masala<span>Rush</span></div>
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#specials">Specials</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#" class="nav-cta">Order Now 🛵</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <span class="hindi">स्वाद भरा, दिल खुश! 🇮🇳</span>
+    <div class="hero-pill">⚡ Delivery in 30 Min · ₹0 Fee on 1st Order</div>
+    <h1>Authentic Indian<br>Flavours<br><em>At Your Door</em></h1>
+    <p>From Hyderabadi Biryani to Punjabi Dal Makhani — experience India's richest culinary heritage, delivered piping hot within 30 minutes.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="goMenu()">🍛 Order Now</button>
+      <button class="btn-ghost" onclick="goMenu()">📜 View Menu</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-n" id="c1">0</div><div class="stat-l">Restaurants</div></div>
+      <div><div class="stat-n" id="c2">0</div><div class="stat-l">Happy Customers</div></div>
+      <div><div class="stat-n" id="c3">0</div><div class="stat-l">Cities</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-wrap">
+      <div class="ring"></div>
+      <div class="ring ring2"></div>
+      <div class="hero-main-img">
+        <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&h=400&fit=crop&auto=format" alt="Biryani" loading="eager">
+      </div>
+      <div class="orb-track">
+        <div class="orb-item"><img src="https://images.unsplash.com/photo-1627662168806-a57ccdc08d72?w=80&h=80&fit=crop&auto=format" alt="Naan"></div>
+        <div class="orb-item"><img src="https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=80&h=80&fit=crop&auto=format" alt="Curry"></div>
+        <div class="orb-item"><img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=80&h=80&fit=crop&auto=format" alt="Samosa"></div>
+      </div>
+      <div class="badge-f badge-f1">
+        <div style="font-size:1.1rem">⭐</div>
+        <div class="bv">4.9 Rating</div>
+        <div class="bs">25K+ Reviews</div>
+      </div>
+      <div class="badge-f badge-f2">
+        <div style="font-size:1.1rem">⏱️</div>
+        <div class="bv">25 Min Avg</div>
+        <div class="bs">Delivery time</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-bar"><div class="marquee-inner" id="mqInner"></div></div>
+
+<section class="section" id="menu">
+  <div class="sec-sub">Our Menu</div>
+  <div class="sec-title">What's Your <span class="or">Craving?</span></div>
+  <div class="search-row">
+    <input class="s-in" type="text" placeholder="Search biryani, dosa, chai..." oninput="filterFood(this.value)">
+    <button class="s-btn">🔍</button>
+  </div>
+  <div class="cat-row" id="catRow"></div>
+  <div class="food-grid" id="foodGrid"></div>
+</section>
+
+<section class="section" id="specials" style="padding-top:0">
+  <div class="sec-sub">Chef's Pick</div>
+  <div class="sec-title">Today's <span class="or">Specials</span></div>
+  <div class="specials-grid" id="specialsGrid"></div>
+</section>
+
+<div class="how-section" id="how">
+  <div class="how-glow"></div>
+  <div class="sec-sub">Simple Steps</div>
+  <div class="sec-title">How <span class="or">It Works</span></div>
+  <div class="steps-grid" id="stepsGrid"></div>
+</div>
+
+<section class="section">
+  <div class="promo-wrap">
+    <div class="promo-inner">
+      <div class="promo-left">
+        <div class="promo-tag">🎉 Limited Offer</div>
+        <h2>Flat 40% Off<br>Your First Order</h2>
+        <p>Use the code below and enjoy the best of Indian cuisine at half price!</p>
+        <div class="promo-code"><span>MASALA40</span><button class="copy-btn" onclick="copyCode()">Copy</button></div><br>
+        <button class="promo-btn" onclick="showToast('🎉 Code MASALA40 copied! Enjoy 40% off!')">Claim Offer Now</button>
+      </div>
+      <img class="promo-img" src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=400&fit=crop&auto=format" alt="Indian thali" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="sec-sub">Customer Love</div>
+  <div class="sec-title">What Our <span class="or">Foodies Say</span></div>
+  <div class="reviews-track" id="reviewsTrack"></div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">🌶️ Masala<span style="color:white">Rush</span></div>
+      <div class="footer-desc">Bringing the authentic taste of India to your doorstep. Fresh, fast, and full of flavour — every order, every time.</div>
+    </div>
+    <div class="f-col">
+      <h4>Quick Links</h4>
+      <a href="#">Home</a><a href="#">Menu</a><a href="#">Offers</a><a href="#">Track Order</a>
+    </div>
+    <div class="f-col">
+      <h4>Support</h4>
+      <a href="#">Help Center</a><a href="#">Contact Us</a><a href="#">Privacy Policy</a><a href="#">Terms</a>
+    </div>
+  </div>
+  <div class="footer-btm">© 2025 MasalaRush · Made with ❤️ in India · स्वाद भरा जीवन 🌶️</div>
+</footer>
+
+<button class="cart-fab" onclick="showToast('🛒 Cart: ' + cartCount + ' item(s)')">
+  🛒<div class="cart-n" id="cartN">0</div>
+</button>
+<div class="toast" id="toastEl"></div>
+
+<script>
+const U = 'https://images.unsplash.com/';
+
+const foods = [
+  {id:1,  name:'Hyderabadi Dum Biryani',   desc:'Saffron-infused basmati, dum-cooked with whole spices & raita',       price:349, cat:'biryani', veg:false, spice:3, img:U+'photo-1563379091339-03b21ab4a4f8?w=500&h=280&fit=crop&auto=format', badge:'Best Seller', rating:'4.9', time:'25–35 min'},
+  {id:2,  name:'Vegetable Biryani',         desc:'Fragrant basmati with seasonal veggies, saffron & crispy onions',     price:249, cat:'biryani', veg:true,  spice:2, img:U+'photo-1574653853027-5382a3d23a15?w=500&h=280&fit=crop&auto=format', badge:'Popular',     rating:'4.7', time:'20–30 min'},
+  {id:3,  name:'Butter Naan',               desc:'Soft tandoor-baked bread brushed with garlic butter',                  price:49,  cat:'bread',   veg:true,  spice:0, img:U+'photo-1627662168806-a57ccdc08d72?w=500&h=280&fit=crop&auto=format', badge:'',            rating:'4.8', time:'15–20 min'},
+  {id:4,  name:'Stuffed Aloo Paratha',      desc:'Whole-wheat flatbread stuffed with spiced potato & green chilli',      price:89,  cat:'bread',   veg:true,  spice:2, img:U+'photo-1606491956689-2ea866880c84?w=500&h=280&fit=crop&auto=format', badge:'',            rating:'4.6', time:'15–25 min'},
+  {id:5,  name:'Paneer Butter Masala',      desc:'Cottage cheese in velvety tomato-cashew cream sauce',                 price:249, cat:'curry',   veg:true,  spice:2, img:U+'photo-1631452180519-c014fe946bc7?w=500&h=280&fit=crop&auto=format', badge:'Chef Pick',   rating:'4.9', time:'20–30 min'},
+  {id:6,  name:'Butter Chicken',            desc:'Tender murgh makhani in rich saffron-tomato cream gravy',             price:299, cat:'curry',   veg:false, spice:2, img:U+'photo-1588166524941-3bf61a9c41db?w=500&h=280&fit=crop&auto=format', badge:'Hot!',        rating:'4.9', time:'20–30 min'},
+  {id:7,  name:'Dal Makhani',               desc:'Black lentils slow-cooked overnight with cream, butter & spices',     price:199, cat:'curry',   veg:true,  spice:1, img:U+'photo-1546833999-b9f581a1996d?w=500&h=280&fit=crop&auto=format', badge:'',            rating:'4.8', time:'20–25 min'},
+  {id:8,  name:'Samosa (2 pcs)',            desc:'Crispy golden pastry filled with spiced potato & green peas',         price:59,  cat:'snack',   veg:true,  spice:2, img:U+'photo-1601050690597-df0568f70950?w=500&h=280&fit=crop&auto=format', badge:'Street Fave', rating:'4.7', time:'10–20 min'},
+  {id:9,  name:'Pav Bhaji',                 desc:'Spiced vegetable mash served on buttered, toasted pav rolls',        price:149, cat:'snack',   veg:true,  spice:2, img:U+'photo-1606491956689-2ea866880c84?w=500&h=280&fit=crop&auto=format', badge:'',            rating:'4.6', time:'15–20 min'},
+  {id:10, name:'Masala Dosa',               desc:'Crispy fermented rice crepe with spiced potato filling & sambar',    price:149, cat:'south',   veg:true,  spice:1, img:U+'photo-1610192244261-3f33de3f55e4?w=500&h=280&fit=crop&auto=format', badge:'South Special',rating:'4.8', time:'20–30 min'},
+  {id:11, name:'Idli Sambar',               desc:'Steamed rice cakes served with lentil stew & coconut chutney',       price:99,  cat:'south',   veg:true,  spice:1, img:U+'photo-1589301760014-d929f3979dbc?w=500&h=280&fit=crop&auto=format', badge:'',            rating:'4.6', time:'15–20 min'},
+  {id:12, name:'Gulab Jamun',               desc:'Soft khoya balls soaked in rose-cardamom sugar syrup',               price:99,  cat:'sweet',   veg:true,  spice:0, img:U+'photo-1601303516534-5c7e63001cf4?w=500&h=280&fit=crop&auto=format', badge:'Heavenly',    rating:'4.8', time:'10–15 min'},
+  {id:13, name:'Kulfi Falooda',             desc:'Pistachio kulfi with basil seeds, rose syrup & glass noodles',       price:129, cat:'sweet',   veg:true,  spice:0, img:U+'photo-1568901346375-23c9450c58cd?w=500&h=280&fit=crop&auto=format', badge:'Summer Hit',  rating:'4.7', time:'10–15 min'},
+  {id:14, name:'Masala Chai',               desc:'Strong ginger-cardamom spiced milk tea, served piping hot',          price:49,  cat:'drink',   veg:true,  spice:0, img:U+'photo-1571934811356-5cc061b6821f?w=500&h=280&fit=crop&auto=format', badge:'',            rating:'4.9', time:'5–10 min'},
+  {id:15, name:'Mango Lassi',               desc:'Sweet Alphonso mango blended with chilled yoghurt & cardamom',       price:89,  cat:'drink',   veg:true,  spice:0, img:U+'photo-1553361371-9b22f78e8b1d?w=500&h=280&fit=crop&auto=format', badge:'Summer Fave', rating:'4.8', time:'5–10 min'},
+];
+
+const categories = [
+  {id:'all',     label:'All',          img:U+'photo-1585937421612-70a008356fbe?w=80&h=80&fit=crop&auto=format'},
+  {id:'biryani', label:'Biryani',      img:U+'photo-1563379091339-03b21ab4a4f8?w=80&h=80&fit=crop&auto=format'},
+  {id:'bread',   label:'Breads',       img:U+'photo-1627662168806-a57ccdc08d72?w=80&h=80&fit=crop&auto=format'},
+  {id:'curry',   label:'Curries',      img:U+'photo-1631452180519-c014fe946bc7?w=80&h=80&fit=crop&auto=format'},
+  {id:'snack',   label:'Snacks',       img:U+'photo-1601050690597-df0568f70950?w=80&h=80&fit=crop&auto=format'},
+  {id:'south',   label:'South Indian', img:U+'photo-1610192244261-3f33de3f55e4?w=80&h=80&fit=crop&auto=format'},
+  {id:'sweet',   label:'Sweets',       img:U+'photo-1601303516534-5c7e63001cf4?w=80&h=80&fit=crop&auto=format'},
+  {id:'drink',   label:'Drinks',       img:U+'photo-1571934811356-5cc061b6821f?w=80&h=80&fit=crop&auto=format'},
+];
+
+const specials = [
+  {name:'Hyderabadi Dum Biryani', sub:'Slow-cooked saffron rice with tender meat & whole spices', price:349, img:U+'photo-1563379091339-03b21ab4a4f8?w=700&h=600&fit=crop&auto=format', tag:'🔥 Best Seller'},
+  {name:'Paneer Butter Masala',   sub:'Creamy tomato-cashew gravy',                               price:249, img:U+'photo-1631452180519-c014fe946bc7?w=200&h=120&fit=crop&auto=format'},
+  {name:'Dal Makhani',            sub:'Overnight slow-cooked black dal',                          price:199, img:U+'photo-1546833999-b9f581a1996d?w=200&h=120&fit=crop&auto=format'},
+  {name:'Butter Chicken',         sub:'Murgh makhani — velvety & rich',                          price:299, img:U+'photo-1588166524941-3bf61a9c41db?w=200&h=120&fit=crop&auto=format'},
+  {name:'Gulab Jamun',            sub:'Soft khoya balls in rose syrup',                           price:99,  img:U+'photo-1601303516534-5c7e63001cf4?w=200&h=120&fit=crop&auto=format'},
+];
+
+const steps = [
+  {num:'01', title:'Share Location', desc:'Enter your address and discover restaurants near you.',    img:U+'photo-1573408301185-9519f94870b7?w=100&h=100&fit=crop&auto=format'},
+  {num:'02', title:'Pick Your Dish', desc:'Browse menus, choose spice level and add to cart.',        img:U+'photo-1585937421612-70a008356fbe?w=100&h=100&fit=crop&auto=format'},
+  {num:'03', title:'Pay Securely',   desc:'UPI, cards, wallets or COD — 100% safe.',                 img:U+'photo-1563013544-824ae1b704d3?w=100&h=100&fit=crop&auto=format'},
+  {num:'04', title:'Fast Delivery',  desc:'Live-track your order racing hot to your doorstep.',       img:U+'photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop&auto=format'},
+];
+
+const reviews = [
+  {text:'The Hyderabadi Biryani took me right back to Charminar! Perfectly spiced and delivered piping hot.', stars:5, name:'Priya Sharma',  loc:'Mumbai',    avatar:U+'photo-1614289371518-722f2615943d?w=80&h=80&fit=crop&auto=format'},
+  {text:'Butter Chicken just like my Punjabi nani makes it. Rich, creamy and oh-so-comforting. Ordering every week!', stars:5, name:'Rahul Verma',   loc:'Delhi',     avatar:U+'photo-1570295999919-56ceb5ecca61?w=80&h=80&fit=crop&auto=format'},
+  {text:'Crispy Masala Dosa and divine sambar. Fastest delivery in Bangalore ever. Packaging is superb!',     stars:5, name:'Deepa Nair',   loc:'Bengaluru', avatar:U+'photo-1607746882042-944635dfe10e?w=80&h=80&fit=crop&auto=format'},
+  {text:'Dal Makhani is my Sunday ritual now. So creamy, perfectly spiced. MasalaRush never disappoints.',    stars:5, name:'Amit Patel',   loc:'Ahmedabad', avatar:U+'photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&auto=format'},
+  {text:'Gulab Jamun was incredibly fresh and Kulfi Falooda is absolutely divine. Best Indian desserts!',      stars:5, name:'Sneha Roy',    loc:'Kolkata',   avatar:U+'photo-1580489944761-15a19d654956?w=80&h=80&fit=crop&auto=format'},
+];
+
+const mqItems = ['🍛 Biryani','🫓 Butter Naan','🥘 Dal Makhani','🍢 Tandoori','🥗 Raita','🍨 Kulfi','☕ Masala Chai','🫔 Dosa','🍲 Pav Bhaji','🧆 Samosa'];
+
+let cartCount=0, activeCat='all', searchQ='';
+
+let toastTimer;
+function showToast(msg){const el=document.getElementById('toastEl');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3000)}
+
+function addCart(name){cartCount++;const n=document.getElementById('cartN');n.textContent=cartCount;showToast('🛒 '+name+' added to cart!')}
+function toggleFav(btn){btn.classList.toggle('liked');btn.textContent=btn.classList.contains('liked')?'❤️':'🤍';if(btn.classList.contains('liked'))showToast('❤️ Saved to favourites!')}
+function copyCode(){navigator.clipboard.writeText('MASALA40').catch(()=>{});showToast('✅ Code MASALA40 copied! 40% off awaits!')}
+function goMenu(){document.getElementById('menu').scrollIntoView({behavior:'smooth'})}
+
+function renderCats(){
+  const row=document.getElementById('catRow');row.innerHTML='';
+  categories.forEach(c=>{
+    const el=document.createElement('div');el.className='cat-btn'+(c.id==='all'?' active':'');
+    el.innerHTML='<img class="cat-img" src="'+c.img+'" alt="'+c.label+'" loading="lazy"><div class="cat-lbl">'+c.label+'</div>';
+    el.onclick=()=>{document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');activeCat=c.id;renderFoods()};
+    row.appendChild(el);
+  });
+}
+
+function getFiltered(){return foods.filter(f=>(activeCat==='all'||f.cat===activeCat)&&(f.name.toLowerCase().includes(searchQ)||f.desc.toLowerCase().includes(searchQ)))}
+
+function renderFoods(){
+  const grid=document.getElementById('foodGrid');grid.innerHTML='';
+  const items=getFiltered();
+  if(!items.length){grid.innerHTML='<div class="empty">🍽️ No dishes found. Try a different search!</div>';return}
+  items.forEach((f,i)=>{
+    const card=document.createElement('div');card.className='food-card';card.style.transitionDelay=i*.055+'s';
+    const dots=Array.from({length:f.spice},()=>'<div class="sp"></div>').join('');
+    card.innerHTML=`
+      <div class="food-img-wrap">
+        <img class="food-img" src="${f.img}" alt="${f.name}" loading="lazy">
+        <div class="spice-row">${dots}</div>
+        <div class="veg-dot ${f.veg?'veg':'nonveg'}">${f.veg?'V':'N'}</div>
+        ${f.badge?'<div class="food-discount">'+f.badge+'</div>':''}
+        <button class="fav-btn" onclick="toggleFav(this)">🤍</button>
+      </div>
+      <div class="food-body">
+        <div class="food-name">${f.name}</div>
+        <div class="food-desc">${f.desc}</div>
+        <div class="food-foot">
+          <div>
+            <div class="food-price">₹${f.price} <small>/ serving</small></div>
+            <div class="food-rating">⭐ ${f.rating} · ${f.time}</div>
+          </div>
+          <button class="add-btn" onclick="addCart('${f.name}')">+ Add</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+    requestAnimationFrame(()=>setTimeout(()=>card.classList.add('vis'),40+i*52));
+  });
+}
+
+function filterFood(v){searchQ=v.toLowerCase();renderFoods()}
+
+function renderSpecials(){
+  const g=document.getElementById('specialsGrid');
+  const [main,...rest]=specials;
+  let html=`<div class="sp-main" onclick="addCart('${main.name}')">
+    <img class="sp-main-img" src="${main.img}" alt="${main.name}" loading="lazy">
+    <div class="sp-overlay"></div>
+    <div class="sp-main-content">
+      <div class="sp-tag">${main.tag}</div>
+      <h3>${main.name}</h3><p>${main.sub}</p>
+      <button class="sp-main-btn">Order — ₹${main.price}</button>
+    </div></div>`;
+  [[rest[0],rest[1]],[rest[2],rest[3]]].forEach(pair=>{
+    html+='<div class="sp-col">';
+    pair.forEach(s=>{if(!s)return;html+=`<div class="sp-card" onclick="addCart('${s.name}')"><img class="sp-card-img" src="${s.img}" alt="${s.name}" loading="lazy"><div class="sp-card-body"><h4>${s.name}</h4><p>${s.sub}</p><div class="sp-price">₹${s.price}</div></div></div>`;});
+    html+='</div>';
+  });
+  g.innerHTML=html;
+}
+
+function renderSteps(){
+  const g=document.getElementById('stepsGrid');
+  steps.forEach((s,i)=>{
+    const card=document.createElement('div');card.className='step-card';card.style.transitionDelay=i*.12+'s';
+    card.innerHTML=`<div class="step-num">${s.num}</div><img class="step-icon-img" src="${s.img}" alt="${s.title}" loading="lazy"><h3>${s.title}</h3><p>${s.desc}</p>`;
+    g.appendChild(card);
+  });
+  new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')}),{threshold:.12}).observe(g);
+  document.querySelectorAll('.step-card').forEach(c=>{new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')}),{threshold:.1}).observe(c)});
+}
+
+function renderReviews(){
+  const track=document.getElementById('reviewsTrack');
+  reviews.forEach(r=>{
+    const card=document.createElement('div');card.className='rv-card';
+    card.innerHTML=`<div class="rv-stars">${'★'.repeat(r.stars)}</div><div class="rv-text">"${r.text}"</div><div class="rv-user"><img class="rv-avatar" src="${r.avatar}" alt="${r.name}" loading="lazy"><div><div class="rv-name">${r.name}</div><div class="rv-loc">📍 ${r.loc}</div></div></div>`;
+    track.appendChild(card);
+  });
+}
+
+function renderMarquee(){
+  const el=document.getElementById('mqInner');
+  el.innerHTML=[...mqItems,...mqItems].map(t=>'<div class="mq-item">'+t+'</div>').join('');
+}
+
+function createParticles(){
+  const c=document.getElementById('particles');
+  ['🌶️','🍛','🥘','🫓','🍮','🥭','☕','🧆','🫔','🌿','✨','🪔'].forEach(item=>{
+    const p=document.createElement('div');p.className='particle';p.textContent=item;
+    p.style.cssText='left:'+Math.random()*100+'%;font-size:'+(Math.random()*16+12)+'px;animation-duration:'+(Math.random()*18+10)+'s;animation-delay:'+(Math.random()*14)+'s;';
+    c.appendChild(p);
+  });
+}
+
+function animCount(el,target,suffix){let v=0;const step=Math.ceil(target/60);const t=setInterval(()=>{v=Math.min(v+step,target);el.textContent=v+suffix;if(v>=target)clearInterval(t)},25)}
+new IntersectionObserver(entries=>{if(entries[0].isIntersecting){animCount(document.getElementById('c1'),800,'+');animCount(document.getElementById('c2'),120,'K+');animCount(document.getElementById('c3'),45,'+');}},{threshold:.2}).observe(document.querySelector('.hero-stats'));
+
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('hide'),1800));
+
+createParticles();renderMarquee();renderCats();renderFoods();renderSpecials();renderSteps();renderReviews();
+</script>
+</body>
+</html>
